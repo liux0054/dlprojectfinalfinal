@@ -148,7 +148,6 @@ def main(args):
     num_classes = len(set(train_labels+val_labels))
 
     test_filenames, dummy_lables = list_test_images(args.test_dir)
-    print(test_filenames)
     # --------------------------------------------------------------------------
     # In TensorFlow, you first want to define the computation graph with all the
     # necessary operations: loss, training op, accuracy...
