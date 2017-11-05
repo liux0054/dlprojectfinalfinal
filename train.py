@@ -358,7 +358,9 @@ def main(args):
         # Update only the last layer for a few epochs.
         for epoch in range(args.num_epochs1):
             # Run an epoch over the training data.
-            print('Starting epoch %d / %d' % (epoch + 1, args.num_epochs1))
+            with open("status.txt", "a") as myfile:
+                myfile.write('Starting epoch %d / %d \n' % (epoch + 1, args.num_epochs1))
+                myfile.close()
             # Here we initialize the iterator with the training set.
             # This means that we can go through an entire epoch until the iterator becomes empty.
             sess.run(train_init_op)
@@ -372,14 +374,16 @@ def main(args):
             train_acc = check_accuracy(sess, correct_prediction, is_training, train_init_op)
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
             with open("status.txt", "a") as myfile:
-                myfile.write('Train last layer epoch ' + str(epoch))
-                myfile.write('Train accuracy: %f' % train_acc)
-                myfile.write('Val accuracy: %f' % val_acc)
+                myfile.write('Train last layer epoch \n' + str(epoch))
+                myfile.write('Train accuracy: %f \n' % train_acc)
+                myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
 
         # Train the entire model for a few more epochs, continuing with the *same* weights.
         for epoch in range(args.num_epochs2):
-            print('Starting epoch %d / %d' % (epoch + 1, args.num_epochs2))
+            with open("status.txt", "a") as myfile:
+                myfile.write('Starting epoch %d / %d' % (epoch + 1, args.num_epochs2))
+                myfile.close()
             sess.run(train_init_op)
             while True:
                 try:
@@ -391,9 +395,9 @@ def main(args):
             train_acc = check_accuracy(sess, correct_prediction, is_training, train_init_op)
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
             with open("status.txt", "a") as myfile:
-                myfile.write('Train whole model epoch ' + str(epoch))
-                myfile.write('Train accuracy: %f' % train_acc)
-                myfile.write('Val accuracy: %f' % val_acc)
+                myfile.write('Train whole model epoch \n' + str(epoch))
+                myfile.write('Train accuracy: %f \n' % train_acc)
+                myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
 
         sess.run(test_init_op)
