@@ -55,6 +55,7 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import tensorflow.contrib.slim.nets
 import random
+import csv
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--train_dir', default='data_images/train_images', type=str)
@@ -371,9 +372,11 @@ def main(args):
             # Check accuracy on the train and val sets every epoch.
             train_acc = check_accuracy(sess, correct_prediction, is_training, train_init_op)
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
-            print('Train accuracy: %f' % train_acc)
-            print('Val accuracy: %f\n' % val_acc)
-
+            with open("status.txt", "a") as myfile:
+                myfile.write('Train last layer epoch ' + str(epoch))
+                myfile.write('Train accuracy: %f' % train_acc)
+                myfile.write('Val accuracy: %f' % val_acc)
+                myfile.close()
 
         # Train the entire model for a few more epochs, continuing with the *same* weights.
         for epoch in range(args.num_epochs2):
@@ -388,8 +391,11 @@ def main(args):
             # Check accuracy on the train and val sets every epoch
             train_acc = check_accuracy(sess, correct_prediction, is_training, train_init_op)
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
-            print('Train accuracy: %f' % train_acc)
-            print('Val accuracy: %f\n' % val_acc)
+            with open("status.txt", "a") as myfile:
+                myfile.write('Train whole model epoch ' + str(epoch))
+                myfile.write('Train accuracy: %f' % train_acc)
+                myfile.write('Val accuracy: %f' % val_acc)
+                myfile.close()
 
         sess.run(test_init_op)
         pred = get_prediction(sess, prediction, is_training, test_init_op)
@@ -399,12 +405,12 @@ def main(args):
         for row_number, row in enumerate(pred):
             print(str(row_number) + '.jpg,' + str(row[0]))
         print("End Prediction")
-        # with open('submission.csv', 'w', newline='') as csvfile:
-        #     spamwriter = csv.writer(csvfile)
-        #     for row_number, row in enumerate(pred):
-        #         w_row = [str(row_number) + '.jpg', row[0]]
-        #         spamwriter.writerow(w_row)
-        # csvfile.close()
+        with open('submission.csv', 'w', newline='') as csvfile:
+            spamwriter = csv.writer(csvfile)
+            for row_number, row in enumerate(pred):
+                w_row = [str(row_number) + '.jpg', row[0]]
+                spamwriter.writerow(w_row)
+        csvfile.close()
 
 
 if __name__ == '__main__':
