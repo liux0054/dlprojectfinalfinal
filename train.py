@@ -359,7 +359,7 @@ def main(args):
         for epoch in range(args.num_epochs1):
             # Run an epoch over the training data.
             with open("status.txt", "a") as myfile:
-                myfile.write('Starting epoch %d / %d \n' % (epoch + 1, args.num_epochs1))
+                myfile.write('Starting epoch %d / %d ' % (epoch + 1, args.num_epochs1) + '\n')
                 myfile.close()
             # Here we initialize the iterator with the training set.
             # This means that we can go through an entire epoch until the iterator becomes empty.
@@ -374,7 +374,7 @@ def main(args):
             train_acc = check_accuracy(sess, correct_prediction, is_training, train_init_op)
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
             with open("status.txt", "a") as myfile:
-                myfile.write('Train last layer epoch \n' + str(epoch))
+                myfile.write('Train last layer epoch ' + str(epoch) + '\n')
                 myfile.write('Train accuracy: %f \n' % train_acc)
                 myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
@@ -382,7 +382,7 @@ def main(args):
         # Train the entire model for a few more epochs, continuing with the *same* weights.
         for epoch in range(args.num_epochs2):
             with open("status.txt", "a") as myfile:
-                myfile.write('Starting epoch %d / %d' % (epoch + 1, args.num_epochs2))
+                myfile.write('Starting epoch %d / %d ' % (epoch + 1, args.num_epochs2) + '\n')
                 myfile.close()
             sess.run(train_init_op)
             while True:
@@ -395,7 +395,7 @@ def main(args):
             train_acc = check_accuracy(sess, correct_prediction, is_training, train_init_op)
             val_acc = check_accuracy(sess, correct_prediction, is_training, val_init_op)
             with open("status.txt", "a") as myfile:
-                myfile.write('Train whole model epoch \n' + str(epoch))
+                myfile.write('Train whole model epoch ' + str(epoch) +'\n')
                 myfile.write('Train accuracy: %f \n' % train_acc)
                 myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
@@ -403,11 +403,11 @@ def main(args):
         sess.run(test_init_op)
         pred = get_prediction(sess, prediction, is_training, test_init_op)
         pred = pred.reshape(-1, 1)
-        print('Begin Prediction')
-        print('image_name,category')
-        for row_number, row in enumerate(pred):
-            print(str(row_number) + '.jpg,' + str(row[0]))
-        print("End Prediction")
+        # print('Begin Prediction')
+        # print('image_name,category')
+        # for row_number, row in enumerate(pred):
+        #     print(str(row_number) + '.jpg,' + str(row[0]))
+        # print("End Prediction")
         with open('submission.csv', 'w', newline='') as csvfile:
             spamwriter = csv.writer(csvfile)
             for row_number, row in enumerate(pred):
