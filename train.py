@@ -69,7 +69,7 @@ parser.add_argument('--learning_rate1', default=1e-3, type=float)
 parser.add_argument('--learning_rate2', default=1e-5, type=float)
 parser.add_argument('--dropout_keep_prob', default=0.5, type=float)
 parser.add_argument('--weight_decay', default=5e-4, type=float)
-parser.add_argument('--train_val_split', default=0.2, type=float)
+parser.add_argument('--train_val_split', default=0.1, type=float)
 
 VGG_MEAN = [123.68, 116.78, 103.94]
 
