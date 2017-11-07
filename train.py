@@ -55,7 +55,6 @@ import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import tensorflow.contrib.slim.nets
 import random
-import csv
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--train_dir', default='data_images/train_images', type=str)
@@ -409,12 +408,12 @@ def main(args):
         # for row_number, row in enumerate(pred):
         #     print(str(row_number) + '.jpg,' + str(row[0]))
         # print("End Prediction")
-        with open('submission.csv', 'w', newline='') as csvfile:
-            spamwriter = csv.writer(csvfile)
+        with open('submission.txt', 'a') as submission_file:
+            submission_file.write('image_name,category \n')
             for row_number, row in enumerate(pred):
-                w_row = [str(row_number) + '.jpg', row[0]]
-                spamwriter.writerow(w_row)
-        csvfile.close()
+                w_row = str(row_number) + '.jpg,' + str(row[0]) + '\n'
+                submission_file.write(w_row)
+            submission_file.close()
 
 
 if __name__ == '__main__':
