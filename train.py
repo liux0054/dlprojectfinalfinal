@@ -142,16 +142,19 @@ def get_prediction(sess, prediction, is_training, dataset_init_op, num_of_test_f
         if counter == num_of_test_files:
             break
         try:
-            pred = sess.run(prediction, {is_training: False})
-            pred = pred.reshape(-1, 1)
-            with open('submission.txt', 'a') as submission_file:
-                for row in pred:
-                    w_row = str(counter)+'.jpg,' + str(row[0]) + '\n'
-                    submission_file.write(w_row)
-                    counter += 1
-                    if counter == num_of_test_files:
-                        break
-                submission_file.close()
+            if counter < num_of_test_files:
+                pred = sess.run(prediction, {is_training: False})
+                pred = pred.reshape(-1, 1)
+                with open('submission.txt', 'a') as submission_file:
+                    for row in pred:
+                        w_row = str(counter)+'.jpg,' + str(row[0]) + '\n'
+                        submission_file.write(w_row)
+                        counter += 1
+                        if counter == num_of_test_files:
+                            break
+                    submission_file.close()
+            else:
+                break
         except tf.errors.OutOfRangeError:
             break
     return
@@ -273,7 +276,7 @@ def main(args):
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
         val_dataset = val_dataset.map(val_preprocess,
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
-        batched_val_dataset = val_dataset.batch(args.batch_size)
+        batched_val_dataset = val_dataset.batch(1)
 
         # test dataset
         test_filenames = tf.constant(test_filenames)
