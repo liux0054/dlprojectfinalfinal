@@ -60,7 +60,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--train_dir', default='data_images/train_images', type=str)
 parser.add_argument('--test_dir', default='data_images/test_images', type=str)
 parser.add_argument('--model_path', default='data_images/vgg_16.ckpt', type=str)
-parser.add_argument('--batch_size', default=64, type=int)
+parser.add_argument('--batch_size', default=32, type=int)
 parser.add_argument('--num_workers', default=4, type=int)
 parser.add_argument('--num_epochs1', default=15, type=int)
 parser.add_argument('--num_epochs2', default=15, type=int)
@@ -131,15 +131,16 @@ def check_accuracy(sess, correct_prediction, is_training, dataset_init_op):
     return acc
 
 
-def get_prediction(sess, prediction, is_training, dataset_init_op):
+def get_prediction(sess, prediction, is_training, dataset_init_op, num_of_test_files):
     sess.run(dataset_init_op)
-
     with open('submission.txt', 'a') as submission_file:
         submission_file.write('image_name,category \n')
         submission_file.close()
 
     counter = 0
     while True:
+        if counter == num_of_test_files:
+            break
         try:
             pred = sess.run(prediction, {is_training: False})
             pred = pred.reshape(-1, 1)
@@ -148,8 +149,9 @@ def get_prediction(sess, prediction, is_training, dataset_init_op):
                     w_row = str(counter)+'.jpg,' + str(row[0]) + '\n'
                     submission_file.write(w_row)
                     counter += 1
+                    if counter == num_of_test_files:
+                        break
                 submission_file.close()
-
         except tf.errors.OutOfRangeError:
             break
     return
@@ -160,7 +162,7 @@ def main(args):
     train_filenames, train_labels, val_filenames, val_labels = list_images(args.train_dir)
     num_classes = len(set(train_labels+val_labels))
 
-    test_filenames, dummy_lables, num_of_tests = list_test_images(args.test_dir)
+    test_filenames, dummy_lables, num_of_test_files = list_test_images(args.test_dir)
     # --------------------------------------------------------------------------
     # In TensorFlow, you first want to define the computation graph with all the
     # necessary operations: loss, training op, accuracy...
@@ -412,7 +414,7 @@ def main(args):
                 myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
 
-        get_prediction(sess, prediction, is_training, test_init_op)
+        get_prediction(sess, prediction, is_training, test_init_op, num_of_test_files)
 
 
 if __name__ == '__main__':
