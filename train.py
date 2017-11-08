@@ -60,10 +60,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--train_dir', default='data_images/train_images', type=str)
 parser.add_argument('--test_dir', default='data_images/test_images', type=str)
 parser.add_argument('--model_path', default='data_images/vgg_16.ckpt', type=str)
-parser.add_argument('--batch_size', default=32, type=int)
+parser.add_argument('--batch_size', default=64, type=int)
 parser.add_argument('--num_workers', default=4, type=int)
-parser.add_argument('--num_epochs1', default=15, type=int)
-parser.add_argument('--num_epochs2', default=15, type=int)
+parser.add_argument('--num_epochs1', default=10, type=int)
+parser.add_argument('--num_epochs2', default=10, type=int)
 parser.add_argument('--learning_rate1', default=1e-3, type=float)
 parser.add_argument('--learning_rate2', default=1e-5, type=float)
 parser.add_argument('--dropout_keep_prob', default=0.5, type=float)
@@ -108,7 +108,7 @@ def list_test_images(directory):
     for i in range(num_of_files):
         test_filenames.append(directory + '/' + str(i)+'.jpg')
         labels.append(100)
-    return test_filenames, labels
+    return test_filenames, labels, num_of_files
 
 
 def check_accuracy(sess, correct_prediction, is_training, dataset_init_op):
@@ -146,7 +146,7 @@ def main(args):
     train_filenames, train_labels, val_filenames, val_labels = list_images(args.train_dir)
     num_classes = len(set(train_labels+val_labels))
 
-    test_filenames, dummy_lables = list_test_images(args.test_dir)
+    test_filenames, dummy_lables, num_of_tests = list_test_images(args.test_dir)
     # --------------------------------------------------------------------------
     # In TensorFlow, you first want to define the computation graph with all the
     # necessary operations: loss, training op, accuracy...
@@ -267,8 +267,7 @@ def main(args):
              num_threads=args.num_workers, output_buffer_size=args.batch_size)
         test_dataset = test_dataset.map(test_preprocess,
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
-        batched_test_dataset = test_dataset.batch(args.batch_size)
-
+        batched_test_dataset = test_dataset.batch(num_of_tests)
 
         # Now we define an iterator that can operator on either dataset.
         # The iterator can be reinitialized by calling:
@@ -343,7 +342,6 @@ def main(args):
         # Evaluation metrics
         prediction = tf.to_int32(tf.argmax(logits, 1))
         correct_prediction = tf.equal(prediction, labels)
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         tf.get_default_graph().finalize()
 
@@ -400,21 +398,15 @@ def main(args):
                 myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
 
-        sess.run(test_init_op)
-        pred = get_prediction(sess, prediction, is_training, test_init_op)
-        pred = pred.reshape(-1, 1)
-        # print('Begin Prediction')
-        # print('image_name,category')
-        # for row_number, row in enumerate(pred):
-        #     print(str(row_number) + '.jpg,' + str(row[0]))
-        # print("End Prediction")
-        with open('submission.txt', 'a') as submission_file:
-            submission_file.write('image_name,category \n')
-            for row_number, row in enumerate(pred):
-                w_row = str(row_number) + '.jpg,' + str(row[0]) + '\n'
-                submission_file.write(w_row)
-            submission_file.close()
-
+            if args.num_epochs2-epoch <= 3:
+                pred = get_prediction(sess, prediction, is_training, test_init_op)
+                pred = pred.reshape(-1, 1)
+                with open('submission_' + str(epoch) +'.txt', 'a') as submission_file:
+                    submission_file.write('image_name,category \n')
+                    for row_number, row in enumerate(pred):
+                        w_row = str(row_number) + '.jpg,' + str(row[0]) + '\n'
+                        submission_file.write(w_row)
+                    submission_file.close()
 
 if __name__ == '__main__':
     args = parser.parse_args()
