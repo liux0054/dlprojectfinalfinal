@@ -60,10 +60,10 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--train_dir', default='data_images/train_images', type=str)
 parser.add_argument('--test_dir', default='data_images/test_images', type=str)
 parser.add_argument('--model_path', default='data_images/vgg_16.ckpt', type=str)
-parser.add_argument('--batch_size', default=32, type=int)
+parser.add_argument('--batch_size', default=64, type=int)
 parser.add_argument('--num_workers', default=4, type=int)
-parser.add_argument('--num_epochs1', default=20, type=int)
-parser.add_argument('--num_epochs2', default=20, type=int)
+parser.add_argument('--num_epochs1', default=15, type=int)
+parser.add_argument('--num_epochs2', default=15, type=int)
 parser.add_argument('--learning_rate1', default=1e-3, type=float)
 parser.add_argument('--learning_rate2', default=1e-5, type=float)
 parser.add_argument('--dropout_keep_prob', default=0.5, type=float)
@@ -398,15 +398,15 @@ def main(args):
                 myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
 
-            if args.num_epochs2-epoch <= 5:
-                pred = get_prediction(sess, prediction, is_training, test_init_op)
-                pred = pred.reshape(-1, 1)
-                with open('submission_' + str(epoch) +'.txt', 'a') as submission_file:
-                    submission_file.write('image_name,category \n')
-                    for row_number, row in enumerate(pred):
-                        w_row = str(row_number) + '.jpg,' + str(row[0]) + '\n'
-                        submission_file.write(w_row)
-                    submission_file.close()
+        pred = get_prediction(sess, prediction, is_training, test_init_op)
+        pred = pred.reshape(-1, 1)
+        with open('submission_' + str(epoch+1) +'.txt', 'a') as submission_file:
+            submission_file.write('image_name,category \n')
+            for row_number, row in enumerate(pred):
+                w_row = str(row_number) + '.jpg,' + str(row[0]) + '\n'
+                submission_file.write(w_row)
+            submission_file.close()
+
 
 if __name__ == '__main__':
     args = parser.parse_args()
