@@ -133,12 +133,26 @@ def check_accuracy(sess, correct_prediction, is_training, dataset_init_op):
 
 def get_prediction(sess, prediction, is_training, dataset_init_op):
     sess.run(dataset_init_op)
+
+    with open('submission.txt', 'a') as submission_file:
+        submission_file.write('image_name,category \n')
+        submission_file.close()
+
+    counter = 0
     while True:
         try:
             pred = sess.run(prediction, {is_training: False})
+            pred = pred.reshape(-1, 1)
+            with open('submission.txt', 'a') as submission_file:
+                for row in pred:
+                    w_row = str(counter)+'.jpg,' + str(row[0]) + '\n'
+                    submission_file.write(w_row)
+                    counter += 1
+                submission_file.close()
+
         except tf.errors.OutOfRangeError:
             break
-    return pred
+    return
 
 
 def main(args):
@@ -267,7 +281,7 @@ def main(args):
              num_threads=args.num_workers, output_buffer_size=args.batch_size)
         test_dataset = test_dataset.map(test_preprocess,
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
-        batched_test_dataset = test_dataset.batch(num_of_tests)
+        batched_test_dataset = test_dataset.batch(args.batch_size)
 
         # Now we define an iterator that can operator on either dataset.
         # The iterator can be reinitialized by calling:
@@ -398,14 +412,7 @@ def main(args):
                 myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
 
-        pred = get_prediction(sess, prediction, is_training, test_init_op)
-        pred = pred.reshape(-1, 1)
-        with open('submission_' + str(epoch+1) +'.txt', 'a') as submission_file:
-            submission_file.write('image_name,category \n')
-            for row_number, row in enumerate(pred):
-                w_row = str(row_number) + '.jpg,' + str(row[0]) + '\n'
-                submission_file.write(w_row)
-            submission_file.close()
+        get_prediction(sess, prediction, is_training, test_init_op)
 
 
 if __name__ == '__main__':
