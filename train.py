@@ -398,7 +398,7 @@ def main(args):
                 myfile.write('Val accuracy: %f \n' % val_acc)
                 myfile.close()
 
-            if args.num_epochs2-epoch <= 3:
+            if args.num_epochs2-epoch <= 5:
                 pred = get_prediction(sess, prediction, is_training, test_init_op)
                 pred = pred.reshape(-1, 1)
                 with open('submission_' + str(epoch) +'.txt', 'a') as submission_file:
