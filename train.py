@@ -236,7 +236,7 @@ def main(args):
                     return rotated_image_1, label
                 else:
                     return rotated_image_2, label
-            elif prob < 0.5:
+            elif prob<0.5:
                 distorted_image = tf.image.random_brightness(centered_image, max_delta=63)
                 contrast_image = tf.image.random_contrast(distorted_image, lower=0.2, upper=1.8)
                 return contrast_image, label
@@ -273,11 +273,11 @@ def main(args):
         # Training dataset
         train_filenames = tf.constant(train_filenames)
         train_labels = tf.constant(train_labels)
-        train_dataset = tf.contrib.data.Dataset.from_tensor_slices((train_filenames, train_labels))
+        train_dataset = tf.contrib.data.Dataset.from_tensor_slices((tf.concat([train_filenames, train_filenames],0),
+                                                                              tf.concat([train_labels, train_labels], 0)))
         train_dataset = train_dataset.map(_parse_function,
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
-        train_dataset = train_dataset.map(training_preprocess,
-            num_threads=args.num_workers, output_buffer_size=args.batch_size)
+        train_dataset = train_dataset.map(training_preprocess, num_threads=args.num_workers, output_buffer_size=args.batch_size)
         train_dataset = train_dataset.shuffle(buffer_size=10000)  # don't forget to shuffle
         batched_train_dataset = train_dataset.batch(args.batch_size)
 
