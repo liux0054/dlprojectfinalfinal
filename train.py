@@ -62,8 +62,8 @@ parser.add_argument('--test_dir', default='data_images/test_images', type=str)
 parser.add_argument('--model_path', default='data_images/vgg_16.ckpt', type=str)
 parser.add_argument('--batch_size', default=32, type=int)
 parser.add_argument('--num_workers', default=4, type=int)
-parser.add_argument('--num_epochs1', default=20, type=int)
-parser.add_argument('--num_epochs2', default=20, type=int)
+parser.add_argument('--num_epochs1', default=30, type=int)
+parser.add_argument('--num_epochs2', default=30, type=int)
 parser.add_argument('--learning_rate1', default=1e-3, type=float)
 parser.add_argument('--learning_rate2', default=1e-5, type=float)
 parser.add_argument('--dropout_keep_prob', default=0.5, type=float)
@@ -134,7 +134,7 @@ def check_accuracy(sess, correct_prediction, is_training, dataset_init_op):
 def get_prediction(sess, prediction, is_training, dataset_init_op, num_of_test_files):
     sess.run(dataset_init_op)
     with open('submission.txt', 'a') as submission_file:
-        submission_file.write('image_name,category \n')
+        submission_file.write('image_name,category\n')
         submission_file.close()
 
     counter = 0
