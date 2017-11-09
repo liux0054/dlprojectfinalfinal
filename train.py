@@ -289,7 +289,7 @@ def main(args):
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
         val_dataset = val_dataset.map(val_preprocess,
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
-        batched_val_dataset = val_dataset.batch(1)
+        batched_val_dataset = val_dataset.batch(args.batch_size)
 
         # test dataset
         test_filenames = tf.constant(test_filenames)
@@ -299,7 +299,7 @@ def main(args):
              num_threads=args.num_workers, output_buffer_size=args.batch_size)
         test_dataset = test_dataset.map(test_preprocess,
             num_threads=args.num_workers, output_buffer_size=args.batch_size)
-        batched_test_dataset = test_dataset.batch(args.batch_size)
+        batched_test_dataset = test_dataset.batch(1)
 
         # Now we define an iterator that can operator on either dataset.
         # The iterator can be reinitialized by calling:
