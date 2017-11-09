@@ -228,7 +228,20 @@ def main(args):
             flip_image = tf.image.random_flip_left_right(crop_image)                # (4)
             means = tf.reshape(tf.constant(VGG_MEAN), [1, 1, 3])
             centered_image = flip_image - means                                     # (5)
-            return centered_image, label
+            rotated_image_1 = tf.image.rot90(centered_image, k=1)
+            rotated_image_2 = tf.image.rot90(centered_image, k=3)
+            prob = random.random()
+            if prob < 0.25:
+                if random.random() < 0.5:
+                    return rotated_image_1, label
+                else:
+                    return rotated_image_2, label
+            elif prob < 0.5:
+                distorted_image = tf.image.random_brightness(centered_image, max_delta=63)
+                contrast_image = tf.image.random_contrast(distorted_image, lower=0.2, upper=1.8)
+                return contrast_image, label
+            else:
+                return centered_image, label
 
         # Preprocessing (for validation)
         # (3) Take a central 224x224 crop to the scaled image
