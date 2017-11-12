@@ -1,0 +1,4 @@
+1. wget http://download.tensorflow.org/models/vgg_19_2016_08_28.tar.gz to download pretrained model weights
+2. unzip and get vgg_19.ckpt
+3. place vgg_19.ckpt as showed in folder_structure.PNG
+4. please move the labels.csv from train_images and rename as train.csv and put it as shown in the folder_structure.PNG
