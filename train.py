@@ -153,7 +153,7 @@ def get_prediction(sess, prediction, is_training, dataset_init_op, num_of_test_f
                     writer = csv.writer(csv_file, delimiter=',')
                     for row in pred:
                         w_row = [str(counter)+'.jpg', str(row[0])]
-                        writer.write(w_row)
+                        writer.writerow(w_row)
                         counter += 1
                         if counter == num_of_test_files:
                             break
