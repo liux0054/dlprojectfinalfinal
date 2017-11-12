@@ -150,7 +150,7 @@ def get_prediction(sess, prediction, is_training, dataset_init_op, num_of_test_f
                 pred = sess.run(prediction, {is_training: False})
                 pred = pred.reshape(-1, 1)
                 with open('test.csv', 'a') as submission_file:
-                    writer = csv.writer(csv_file, delimiter=',')
+                    writer = csv.writer(submission_file, delimiter=',')
                     for row in pred:
                         w_row = [str(counter)+'.jpg', str(row[0])]
                         writer.writerow(w_row)
