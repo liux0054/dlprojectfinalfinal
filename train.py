@@ -6,9 +6,9 @@ Based on PyTorch example from Justin Johnson
 Required packages: tensorflow (v1.2)
 Download the weights trained on ImageNet for VGG:
 ```
-wget http://download.tensorflow.org/models/vgg_19_2016_08_28.tar.gz
-tar -xvf vgg_19_2016_08_28.tar.gz
-rm vgg_19_2016_08_28.tar.gz
+wget http://download.tensorflow.org/models/vgg_16_2016_08_28.tar.gz
+tar -xvf vgg_16_2016_08_28.tar.gz
+rm vgg_16_2016_08_28.tar.gz
 ```
 For this example we will use a tiny dataset of images from the COCO dataset.
 We have chosen eight types of animals (bear, bird, cat, dog, giraffe, horse,
@@ -58,9 +58,10 @@ import random
 import csv
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--train_dir', default='train_images', type=str)
-parser.add_argument('--test_dir', default='test_images', type=str)
-parser.add_argument('--model_path', default='vgg_19.ckpt', type=str)
+parser.add_argument('--train_dir', default='./data/train_images', type=str)
+parser.add_argument('--test_dir', default='./data/test_images', type=str)
+parser.add_argument('--label_path', default='./data/train.csv', type=str)
+parser.add_argument('--model_path', default='vgg_16.ckpt', type=str)
 parser.add_argument('--batch_size', default=16, type=int)
 parser.add_argument('--num_workers', default=4, type=int)
 parser.add_argument('--num_epochs1', default=50, type=int)
@@ -78,7 +79,7 @@ def list_images(directory):
     """
     Get all the images and labels in directory/label/*.jpg
     """
-    master = pd.read_csv("train.csv")
+    master = pd.read_csv(args.label_path)
     master.head()
     filenames = list()
     labels = list()
@@ -337,13 +338,13 @@ def main(args):
         # Then we will train the entire model on our dataset for a few epochs.
 
         # Get the pretrained model, specifying the num_classes argument to create a new
-        # fully connected replacing the last one, called "vgg_19/fc8"
-        # Each model has a different architecture, so "vgg_19/fc8" will change in another model.
+        # fully connected replacing the last one, called "vgg_16/fc8"
+        # Each model has a different architecture, so "vgg_16/fc8" will change in another model.
         # Here, logits gives us directly the predicted scores we wanted from the images.
-        # We pass a scope to initialize "vgg_19/fc8" weights with he_initializer
+        # We pass a scope to initialize "vgg_16/fc8" weights with he_initializer
         vgg = slim.nets.vgg
         with slim.arg_scope(vgg.vgg_arg_scope(weight_decay=args.weight_decay)):
-            logits, _ = vgg.vgg_19(images, num_classes=num_classes, is_training=is_training,
+            logits, _ = vgg.vgg_16(images, num_classes=num_classes, is_training=is_training,
                                    dropout_keep_prob=args.dropout_keep_prob)
 
         # Specify where the model checkpoint is (pretrained weights).
@@ -352,12 +353,12 @@ def main(args):
 
         # Restore only the layers up to fc7 (included)
         # Calling function `init_fn(sess)` will load all the pretrained weights.
-        variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_19/fc8'])
+        variables_to_restore = tf.contrib.framework.get_variables_to_restore(exclude=['vgg_16/fc8'])
         init_fn = tf.contrib.framework.assign_from_checkpoint_fn(model_path, variables_to_restore)
 
         # Initialization operation from scratch for the new "fc8" layers
         # `get_variables` will only return the variables whose name starts with the given pattern
-        fc8_variables = tf.contrib.framework.get_variables('vgg_19/fc8')
+        fc8_variables = tf.contrib.framework.get_variables('vgg_16/fc8')
         fc8_init = tf.variables_initializer(fc8_variables)
 
         # ---------------------------------------------------------------------
